@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抽奖</title>
+<style>
+    body{
+        background-color: #fbeac3;
+    }
+    #container {
+        width: 330px;
+        height: 340px;
+        margin: 10% auto;
+        border: 7px solid #b1deff;
+        border-radius: 10px;
+        padding: 2%;
+    }
+    #list {
+        width: 330px;
+        height: 340px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    #list li,
+    #list span {
+        width: 100px;
+        height: 100px;
+        float: left;
+        text-align: center;
+        line-height: 100px;
+        position: relative;
+        background-color:#d3b57047;
+        margin: 1.4%;
+        border-radius: 5px;
+    }
+    #list li img{
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    #list li .mask{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left:0;
+        top:0;
+        background: url(images/mask.png) no-repeat;
+        background-size: cover;
+        display: none;
+    }
+    #list span:hover {
+        cursor: pointer;
+        color: orange;
+        font-size: 18px;
+    }
+    #list .active .mask{
+        display: block;
+    }
+    #message {
+        line-height: 32px;
+        color: #9a9a9a;
+        text-align: center;
+        position:absolute;
+        left: 50%;
+        top: 50px;
+        width: 300px;
+        height: 50px;
+        margin-left: -150px;
+        display: none;
+        background: #fbeac3;
+        color: #000;
+    }
+</style>
+</head>
+<body>            
+    <h2 style="text-align:center;margin-top: 10%;color:black">抽奖九宫格</h2>
+    <div id="container">
+        <ul id="list">
+            <!-- img标签放奖品图片 -->
+            <!-- mask类为抽奖滚动起来的标记 -->
+            <li><img src="images/1.png"/><div class="mask"></div></li>
+            <li><img src="images/2.png"/><div class="mask"></div></li>
+            <li><img src="images/3.png"/><div class="mask"></div></li>
+            <li><img src="images/4.png"/><div class="mask"></div></li>
+            <span id="startbutton" onclick="startlottery()" style="background-color:#ff3a59;color:white;font-size: 20px;">开始抽奖</span>
+            <li><img src="images/5.png"/><div class="mask"></div></li>
+            <li><img src="images/6.png"/><div class="mask"></div></li>
+            <li><img src="images/7.png"/><div class="mask"></div></li>
+            <li><img src="images/8.png"/><div class="mask"></div></li>
+        </ul>
+        <div id="message"></div><!-- 获奖信息展示 -->
+    </div>
+</body>
+
+<script type="text/javascript">
+
+    var container = document.getElementById('container'),
+        li = container.getElementsByTagName('li'),
+        span = document.getElementById('startbutton'),
+        message = document.getElementById('message'),
+        timer = null;
+        bReady = true;//定义一个抽奖开关
+
+    var prize = [0,1,2,4,7,6,5,3];//奖品li标签滚动的顺序
+
+    var num = 0;//num用来存放得到的随机函数，也就是抽中的奖品
+
+    //开始抽奖
+    function startlottery(){
+        if(bReady) {//当抽奖开关为true的时候，可点击抽奖
+            message.style.display="none";//将获奖信息div隐藏（以防止上次抽奖信息还显示）
+            span.style.background="#ada7a8";
+            bReady = false;//抽奖开关设为false 处于抽奖中 即不能点击抽奖
+            num = getrandomnum(1,9)//得到一个随机数（即奖品）
+            // console.log(num)
+            startinit(num);//执行抽奖初始化
+        }
+    }
+
+
+    //抽中的奖品 返回1-9的整数，包含1，不包含9
+    function getrandomnum(n, m) {
+        return parseInt((m - n) * Math.random() + n);
+    }
+
+
+    //抽奖初始化
+    function startinit(num) {
+        var i = 0;  //定义一个i 用来计算抽奖跑动的总次数
+        var t =200;  //抽奖跑动的速度 初始为200毫秒
+        var rounds = 5;  //抽奖转动的圈数
+        var rNum = rounds*8;  //标记跑动的次数（这是一个条件判断分界线）
+        timer = setTimeout(startscroll, t);//每t毫秒执行startscroll函数
+
+
+        //抽奖滚动的函数
+        function startscroll() {
+
+            //每次滚动抽奖将所有li的class都设为空
+            for(var j = 0; j < li.length; j++) {
+                li[j].className = '';
+            }
+
+            var prizenum = prize[i%li.length];  //通过i余8得到此刻在prize数组中的数字，该数字就是mask标记出现的位置
+            li[prizenum].className = "active";
+            i++;
+
+            if(i<rNum-8){  //当i小于转(rNum-8次)的数量，t不变还是200毫秒
+                timer = setTimeout(startscroll, t);//继续执行抽奖滚动
+            }else if(i>= rNum-8 && i< rNum+num){
+                //t时间变长，此时计时器运行速度降低，同时标签刷新速度也降低
+                t+=(i-rNum+8)*5;
+                timer = setTimeout(startscroll, t);//继续执行抽奖滚动
+            }
+            if( i >= rNum+num){//当i大于转rNum加随机数字num次计时器结束，出现提示框提示中奖信息
+
+                if (num==1) {
+                   message.innerHTML="恭喜你获得一台空气炸锅";
+                }else if(num==2){
+                   message.innerHTML="恭喜你获得100元红包";
+                }else if(num==3){
+                   message.innerHTML="恭喜你获得一台微波炉";
+                }else if(num==4){
+                   message.innerHTML="恭喜你获得200元红包";
+                }else if(num==5){
+                   message.innerHTML="恭喜你获得300元红包";
+                }else if(num==6){
+                   message.innerHTML="恭喜你获得再抽一次机会";
+                }else if(num==7){
+                   message.innerHTML="恭喜你获得520元红包";
+                }else if(num==8){
+                   message.innerHTML="恭喜你获得生日蛋糕，以上奖项任选一个";
+                }
+
+                var timer2 = null;
+                timer2 = setTimeout(function(){
+                    message.style.display="block";//奖品展示的信息为显示状态
+                    span.style.background="#ff3a59";
+                    clearTimeout(timer2);
+                },1000);
+                bReady = true;//当计时器结束后让span标签变为抽奖状态
+                clearTimeout(timer);
+            }
+
+        }
+    }
+
+</script>
+</html>
