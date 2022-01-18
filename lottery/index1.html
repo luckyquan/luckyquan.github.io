@@ -76,8 +76,23 @@
 </style>
 </head>
 <body>            
-    <h2 style="text-align:center;margin-top: 10%;color:black">不在有效日期内，请联系管理员后重试！</h2>
-   
+    <h2 style="text-align:center;margin-top: 10%;color:black">抽奖九宫格</h2>
+    <div id="container">
+        <ul id="list">
+            <!-- img标签放奖品图片 -->
+            <!-- mask类为抽奖滚动起来的标记 -->
+            <li><img src="images/1.png"/><div class="mask"></div></li>
+            <li><img src="images/2.png"/><div class="mask"></div></li>
+            <li><img src="images/3.png"/><div class="mask"></div></li>
+            <li><img src="images/4.png"/><div class="mask"></div></li>
+            <span id="startbutton" onclick="startlottery()" style="background-color:#ff3a59;color:white;font-size: 20px;">开始抽奖</span>
+            <li><img src="images/5.png"/><div class="mask"></div></li>
+            <li><img src="images/6.png"/><div class="mask"></div></li>
+            <li><img src="images/7.png"/><div class="mask"></div></li>
+            <li><img src="images/8.png"/><div class="mask"></div></li>
+        </ul>
+        <div id="message"></div><!-- 获奖信息展示 -->
+    </div>
 </body>
 
 <script type="text/javascript">
